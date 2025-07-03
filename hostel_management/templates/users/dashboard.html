@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Hostel Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-bed me-2"></i>Total Rooms</h5>
+                <h2 class="card-text">{{ total_rooms }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-door-open me-2"></i>Available Rooms</h5>
+                <h2 class="card-text">{{ available_rooms }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-users me-2"></i>Total Residents</h5>
+                <h2 class="card-text">{{ total_residents }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-tools me-2"></i>Pending Maintenance</h5>
+                <h2 class="card-text">{{ pending_maintenance }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-chart-pie me-2"></i>Room Occupancy</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="roomOccupancyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-chart-line me-2"></i>Maintenance Trends</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="maintenanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-money-bill me-2"></i>Recent Payments</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="paymentChart"></canvas>
+                </div>
+                <div class="list-group mt-3">
+                    {% for payment in recent_payments %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ payment.resident.get_full_name }}</h6>
+                            <small>{{ payment.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <p class="mb-1">Amount: ${{ payment.amount }}</p>
+                        <small>Payment ID: {{ payment.payment_id }}</small>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item">No recent payments</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Recent Complaints</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for complaint in recent_complaints %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ complaint.title }}</h6>
+                            <small>{{ complaint.created_at|date:"M d, Y" }}</small>
+                        </div>
+                        <p class="mb-1">{{ complaint.description|truncatewords:20 }}</p>
+                        <small>Status: {{ complaint.status }}</small>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item">No recent complaints</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Room Occupancy Pie Chart
+    const roomOccupancyCtx = document.getElementById('roomOccupancyChart').getContext('2d');
+    new Chart(roomOccupancyCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Occupied', 'Available'],
+            datasets: [{
+                data: [{{ total_rooms|add:"-"|add:available_rooms }}, {{ available_rooms }}],
+                backgroundColor: ['#6c757d', '#28a745'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+        }
+    });
+
+    // Maintenance Bar Chart
+    const maintenanceCtx = document.getElementById('maintenanceChart').getContext('2d');
+    new Chart(maintenanceCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Pending', 'In Progress', 'Completed'],
+            datasets: [{
+                label: 'Maintenance Status',
+                data: [{{ pending_maintenance }}, 0, 0], // You'll need to add these counts to the context
+                backgroundColor: ['#ffc107', '#17a2b8', '#28a745']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Payment Line Chart (last 5 payments)
+    const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+    new Chart(paymentCtx, {
+        type: 'line',
+        data: {
+            labels: [{% for payment in recent_payments reversed %}'{{ payment.created_at|date:"M d" }}'{% if not forloop.last %}, {% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Payment Amount ($)',
+                data: [{% for payment in recent_payments reversed %}{{ payment.amount }}{% if not forloop.last %}, {% endif %}{% endfor %}],
+                borderColor: '#28a745',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

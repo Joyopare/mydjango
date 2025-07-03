@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ student.get_full_name }} - Student Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0"><i class="fas fa-user"></i> Personal Information</h5>
+                </div>
+                <div class="card-body">
+                    {% if student.profile_picture %}
+                    <img src="{{ student.profile_picture.url }}" class="img-fluid rounded-circle mb-3" alt="Profile Picture">
+                    {% endif %}
+                    <h4>{{ student.get_full_name }}</h4>
+                    <p class="text-muted">@{{ student.username }}</p>
+                    <hr>
+                    <p><i class="fas fa-envelope"></i> {{ student.email }}</p>
+                    <p><i class="fas fa-phone"></i> {{ student.phone_number }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0"><i class="fas fa-home"></i> Current Room</h5>
+                </div>
+                <div class="card-body">
+                    {% if current_allocation %}
+                        <h4>Room {{ current_allocation.room.room_number }}</h4>
+                        <p>Check-in Date: {{ current_allocation.check_in_date }}</p>
+                        <p>Floor: {{ current_allocation.room.floor }}</p>
+                        <p>Room Type: {{ current_allocation.room.get_room_type_display }}</p>
+                    {% else %}
+                        <p class="text-muted">Not currently allocated to any room</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0"><i class="fas fa-history"></i> Room Allocation History</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Room</th>
+                                    <th>Check-in Date</th>
+                                    <th>Check-out Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for allocation in allocation_history %}
+                                <tr>
+                                    <td>Room {{ allocation.room.room_number }}</td>
+                                    <td>{{ allocation.check_in_date }}</td>
+                                    <td>{{ allocation.check_out_date|default:"Current" }}</td>
+                                    <td>
+                                        {% if allocation.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Past</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No allocation history found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning">
+                            <h5 class="card-title mb-0"><i class="fas fa-money-bill"></i> Recent Payments</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for payment in payment_history %}
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">{{ payment.amount }}</h6>
+                                    <p class="mb-1">{{ payment.payment_type }}</p>
+                                    <small class="text-muted">{{ payment.created_at }}</small>
+                                </div>
+                                {% empty %}
+                                <div class="list-group-item">No payment records found</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="card-title mb-0"><i class="fas fa-exclamation-circle"></i> Recent Complaints</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for complaint in complaints %}
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">{{ complaint.title }}</h6>
+                                    <p class="mb-1">{{ complaint.description|truncatewords:20 }}</p>
+                                    <small class="text-muted">{{ complaint.created_at }}</small>
+                                </div>
+                                {% empty %}
+                                <div class="list-group-item">No complaints found</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

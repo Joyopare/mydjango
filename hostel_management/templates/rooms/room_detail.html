@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Room {{ room.number }} - Hostel Management System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Room Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h2 class="mb-0">Room {{ room.number }}</h2>
+                    <span class="badge {% if room.status == 'available' %}bg-success
+                                   {% elif room.status == 'occupied' %}bg-info
+                                   {% else %}bg-warning{% endif %}">
+                        {{ room.status|title }}
+                    </span>
+                </div>
+                <table class="table">
+                    <tr>
+                        <th><i class="fas fa-building me-2"></i>Floor:</th>
+                        <td>{{ room.floor }}</td>
+                    </tr>
+                    <tr>
+                        <th><i class="fas fa-bed me-2"></i>Type:</th>
+                        <td>{{ room.room_type|title }}</td>
+                    </tr>
+                    <tr>
+                        <th><i class="fas fa-money-bill me-2"></i>Monthly Rent:</th>
+                        <td>${{ room.monthly_rent }}</td>
+                    </tr>
+                    <tr>
+                        <th><i class="fas fa-list me-2"></i>Amenities:</th>
+                        <td>{{ room.amenities }}</td>
+                    </tr>
+                </table>
+                <div class="d-grid gap-2">
+                    {% if room.status == 'available' %}
+                    <a href="{% url 'allocate_room' room.id %}" class="btn btn-success">
+                        <i class="fas fa-user-plus me-2"></i>Allocate Room
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'report_maintenance' room.id %}" class="btn btn-warning">
+                        <i class="fas fa-tools me-2"></i>Report Maintenance
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-history me-2"></i>Allocation History</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Resident</th>
+                                <th>Allocated By</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for allocation in allocations %}
+                            <tr>
+                                <td>{{ allocation.resident.get_full_name }}</td>
+                                <td>{{ allocation.allocated_by.get_full_name }}</td>
+                                <td>{{ allocation.created_at|date:"M d, Y" }}</td>
+                                <td>{{ allocation.end_date|date:"M d, Y"|default:"-" }}</td>
+                                <td>
+                                    <span class="badge {% if allocation.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {% if allocation.is_active %}Active{% else %}Ended{% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No allocation history</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5 class="card-title mb-0"><i class="fas fa-tools me-2"></i>Maintenance History</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Issue</th>
+                                <th>Reported By</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Resolution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in maintenance_records %}
+                            <tr>
+                                <td>{{ record.issue }}</td>
+                                <td>{{ record.reported_by.get_full_name }}</td>
+                                <td>{{ record.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <span class="badge {% if record.status == 'pending' %}bg-warning
+                                                   {% elif record.status == 'in_progress' %}bg-info
+                                                   {% else %}bg-success{% endif %}">
+                                        {{ record.status|title }}
+                                    </span>
+                                </td>
+                                <td>{{ record.resolution|default:"-" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No maintenance history</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

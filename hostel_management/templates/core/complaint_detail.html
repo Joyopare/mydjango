@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center bg-success">
+            <h2 class="mb-0">Complaint Details</h2>
+            <a href="{% url 'complaint_list' %}" class="btn btn-outline-light">Back to List</a>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h3>{{ complaint.title }}</h3>
+                    <p class="text-muted">
+                        Reported by {{ complaint.reported_by.get_full_name }} on {{ complaint.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <span class="badge {% if complaint.status == 'open' %}bg-danger{% elif complaint.status == 'in_progress' %}bg-warning{% elif complaint.status == 'resolved' %}bg-success{% else %}bg-secondary{% endif %} fs-6">
+                        {{ complaint.get_status_display }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h5>Category</h5>
+                    <p>{{ complaint.get_category_display }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Related Room</h5>
+                    <p>{% if complaint.room %}{{ complaint.room.number }} - {{ complaint.room.get_type_display }}{% else %}Not specified{% endif %}</p>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h5>Description</h5>
+                <p>{{ complaint.description }}</p>
+            </div>
+
+            {% if complaint.assigned_to %}
+            <div class="mb-4">
+                <h5>Assigned To</h5>
+                <p>{{ complaint.assigned_to.get_full_name }}</p>
+            </div>
+            {% endif %}
+
+            {% if complaint.resolution %}
+            <div class="mb-4">
+                <h5>Resolution</h5>
+                <p>{{ complaint.resolution }}</p>
+                <p class="text-muted">Resolved on {{ complaint.resolved_at|date:"M d, Y" }}</p>
+            </div>
+            {% endif %}
+
+            {% if user.is_staff or user == complaint.reported_by %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Update Status</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status" required>
+                                    {% for status_code, status_name in status_choices %}
+                                    <option value="{{ status_code }}" {% if complaint.status == status_code %}selected{% endif %}>
+                                        {{ status_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% if user.is_staff %}
+                            <div class="col-md-6 mb-3">
+                                <label for="assigned_to" class="form-label">Assign To</label>
+                                <select class="form-select" id="assigned_to" name="assigned_to">
+                                    <option value="">Select staff member</option>
+                                    {% for staff in staff_members %}
+                                    <option value="{{ staff.id }}" {% if complaint.assigned_to == staff %}selected{% endif %}>
+                                        {{ staff.get_full_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="resolution" class="form-label">Resolution (required for Resolved/Closed status)</label>
+                            <textarea class="form-control" id="resolution" name="resolution" rows="3">{{ complaint.resolution }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Update Status</button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
