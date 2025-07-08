@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ user.theme_preference|default:'light' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,14 +8,104 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     {% block extra_css %}{% endblock %}
     <style>
+        :root[data-theme="light"] {
+            --bg-color: #dff5f3;
+            --text-color: #000000;
+            --navbar-bg: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --nav-text-color: #000000;
+            --link-color: #000000;
+            --link-hover-color: #333333;
+            --input-bg: #ffffff;
+            --input-text: #000000;
+            --input-placeholder: #6c757d;
+        }
+        
+        :root[data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --navbar-bg: #2d2d2d;
+            --card-bg: #2d2d2d;
+            --border-color: #404040;
+            --nav-text-color: #ffffff;
+            --link-color: #ffffff;
+            --link-hover-color: #cccccc;
+            --input-bg: #2d2d2d;
+            --input-text: #ffffff;
+            --input-placeholder: #ffffff;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
         .navbar-custom {
-          background-color: #ffffff; 
+            background-color: var(--navbar-bg) !important;
+            position: relative;
+            z-index: 1030;
         }
-        body{
-            background: #dff5f3;
+
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link,
+        .navbar-custom .navbar-text {
+            color: var(--nav-text-color) !important;
         }
-      </style>
-      
+
+        .navbar-custom .nav-link:hover {
+            color: var(--link-hover-color) !important;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .list-group-item {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        .dropdown-item {
+            color: var(--text-color);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .form-control {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .form-control::placeholder {
+            color: var(--input-placeholder) !important;
+            opacity: 0.7 !important;
+        }
+
+        input[type="search"] {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        input[type="search"]::placeholder {
+            color: var(--input-placeholder) !important;
+            opacity: 0.7 !important;
+        }
+    </style>
 </head>
 <body>
     {% if user.is_authenticated %}
@@ -63,7 +153,12 @@
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user"></i> {{ user.username }}
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="rounded-circle" width="25" height="25">
+                            {% else %}
+                                <i class="fas fa-user"></i>
+                            {% endif %}
+                            {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{% url 'settings' %}"><i class="fas fa-cog"></i> Settings</a></li>
@@ -93,5 +188,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% block extra_js %}{% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeInputs = document.querySelectorAll('input[name="theme_preference"]');
+            themeInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    document.documentElement.setAttribute('data-theme', this.value);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

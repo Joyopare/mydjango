@@ -7,7 +7,7 @@
 <div class="card">
     <div class="card-header bg-success">
         <h5 class="mb-0"><i class="fas fa-money-bill"></i> Payments</h5>
-    </div>
+    </div> 
     <div class="card-body">
         <form method="get" class="mb-4">
             <div class="row g-3">
@@ -64,7 +64,7 @@
                     <tr>
                         <td>{{ payment.student.get_full_name }}</td>
                         <td>{{ payment.get_payment_type_display }}</td>
-                        <td>GH{{ payment.amount }}</td>
+                        <td>{{ payment.amount }}GH</td>
                         <td>{{ payment.due_date }}</td>
                         <td>
                             <span class="badge {% if payment.status == 'completed' %}bg-success

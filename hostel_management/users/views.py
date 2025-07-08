@@ -131,6 +131,11 @@ def settings_view(request):
             user.email = request.POST.get('email')
             user.phone_number = request.POST.get('phone')
             
+            # Add theme preference handling
+            theme_preference = request.POST.get('theme_preference')
+            if theme_preference in ['light', 'dark']:
+                user.theme_preference = theme_preference
+            
             if 'profile_picture' in request.FILES:
                 user.profile_picture = request.FILES['profile_picture']
             
