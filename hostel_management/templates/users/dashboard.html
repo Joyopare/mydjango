@@ -15,7 +15,7 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-md-3">
-        <div class="card bg-secondary text-white">
+        <div class="card bg-secondary text-white myid">
             <div class="card-body">
                 <h5 class="card-title"><i class="fas fa-bed me-2"></i>Total Rooms</h5>
                 <h2 class="card-text">{{ total_rooms }}</h2>
@@ -23,7 +23,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-success text-white">
+        <div class="card bg-success text-white myid">
             <div class="card-body">
                 <h5 class="card-title"><i class="fas fa-door-open me-2"></i>Available Rooms</h5>
                 <h2 class="card-text">{{ available_rooms }}</h2>
@@ -31,7 +31,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-secondary text-white">
+        <div class="card bg-secondary text-white myid">
             <div class="card-body">
                 <h5 class="card-title"><i class="fas fa-users me-2"></i>Total Residents</h5>
                 <h2 class="card-text">{{ total_residents }}</h2>
@@ -39,7 +39,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-success text-white">
+        <div class="card bg-success text-white myid">
             <div class="card-body">
                 <h5 class="card-title"><i class="fas fa-tools me-2"></i>Pending Maintenance</h5>
                 <h2 class="card-text">{{ pending_maintenance }}</h2>
@@ -51,11 +51,11 @@
 <!-- Charts Row -->
 <div class="row mb-4">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card myid">
             <div class="card-header bg-primary text-white">
                 <h5 class="card-title mb-0"><i class="fas fa-chart-pie me-2"></i>Room Occupancy</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body myid">
                 <div class="chart-container">
                     <canvas id="roomOccupancyChart"></canvas>
                 </div>
@@ -63,8 +63,8 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-info text-white">
+        <div class="card myid">
+            <div class="card-header bg-info text-white ">
                 <h5 class="card-title mb-0"><i class="fas fa-chart-line me-2"></i>Maintenance Trends</h5>
             </div>
             <div class="card-body">
@@ -78,7 +78,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <div class="card">
+        <div class="card myid">
             <div class="card-header bg-success text-white">
                 <h5 class="card-title mb-0"><i class="fas fa-money-bill me-2"></i>Recent Payments</h5>
             </div>
@@ -105,7 +105,7 @@
     </div>
     
     <div class="col-md-6">
-        <div class="card">
+        <div class="card myid">
             <div class="card-header bg-danger text-white">
                 <h5 class="card-title mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Recent Complaints</h5>
             </div>

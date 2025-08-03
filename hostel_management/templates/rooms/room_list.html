@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
 
+{% extends 'base.html' %}
 {% block title %}Rooms - Hostel Management System{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
     <div class="col-md-3">
-        <div class="card bg-secondary text-white">
+        <div class="card bg-secondary text-white myid ">
             <div class="card-body">
                 <h5 class="card-title"><i class="fas fa-bed me-2"></i>Total Rooms</h5>
                 <h2 class="card-text">{{ total_rooms }}</h2>
@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-success text-white">
+        <div class="card bg-success text-white myid">
             <div class="card-body">
                 <h5 class="card-title"><i class="fas fa-door-open me-2"></i>Available</h5>
                 <h2 class="card-text">{{ available_rooms }}</h2>
@@ -21,7 +21,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-secondary text-white">
+        <div class="card bg-secondary text-white myid">
             <div class="card-body">
                 <h5 class="card-title"><i class="fas fa-users me-2"></i>Occupied</h5>
                 <h2 class="card-text">{{ occupied_rooms }}</h2>
@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card bg-success text-white">
+        <div class="card bg-success text-white myid">
             <div class="card-body">
                 <h5 class="card-title"><i class="fas fa-tools me-2"></i>Under Maintenance</h5>
                 <h2 class="card-text">{{ maintenance_rooms }}</h2>
